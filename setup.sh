@@ -352,12 +352,40 @@ configure_mysql() {
     if [ "$MODE" = "install" ]; then
         log "Configuring MySQL..."
         
+        # Ensure MySQL service is running
+        log "Starting MySQL service..."
+        systemctl enable mysql
+        systemctl start mysql
+        
+        # Wait for MySQL to be ready
+        log "Waiting for MySQL to start..."
+        sleep 5
+        
+        # Check if MySQL is running
+        if ! systemctl is-active --quiet mysql; then
+            error "MySQL service failed to start"
+            systemctl status mysql
+            exit 1
+        fi
+        
+        # Test basic connection
+        if ! mysql -e "SELECT 1;" >/dev/null 2>&1; then
+            log "Initial MySQL connection failed, attempting to set root password..."
+            # Try to set initial root password
+            mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_PASSWORD';" || {
+                # If that fails, try without password first
+                mysqladmin -u root password "$DB_PASSWORD" || {
+                    error "Failed to set MySQL root password"
+                    exit 1
+                }
+            }
+        fi
+        
         # Secure MySQL installation
-        mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_PASSWORD';"
-        mysql -u root -p$DB_PASSWORD -e "DELETE FROM mysql.user WHERE User='';"
-        mysql -u root -p$DB_PASSWORD -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-        mysql -u root -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS test;"
-        mysql -u root -p$DB_PASSWORD -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+        mysql -u root -p$DB_PASSWORD -e "DELETE FROM mysql.user WHERE User='';" 2>/dev/null || true
+        mysql -u root -p$DB_PASSWORD -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');" 2>/dev/null || true
+        mysql -u root -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS test;" 2>/dev/null || true
+        mysql -u root -p$DB_PASSWORD -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" 2>/dev/null || true
         
         # Create database and user
         mysql -u root -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS ytdlp_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"

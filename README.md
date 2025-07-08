@@ -69,6 +69,8 @@ During installation, you'll be prompted for:
 - 👤 **Admin username** (for admin panel access)
 - 🔑 **Admin password** (for admin panel access)
 
+> **Note:** If you encounter MySQL connection errors during installation, the installer will automatically attempt to start the MySQL service. For manual troubleshooting, use `sudo ./fix-mysql.sh`.
+
 ## Features
 
 ### Core Features
@@ -318,6 +320,22 @@ htop
 
 ## Troubleshooting
 
+### Quick Diagnostic Tools
+
+```bash
+# Run comprehensive system check
+chmod +x system-check.sh
+./system-check.sh
+
+# Fix MySQL connection issues
+chmod +x fix-mysql.sh
+sudo ./fix-mysql.sh
+
+# Fix Python environment issues
+chmod +x fix-python-env.sh
+./fix-python-env.sh
+```
+
 ### Common Issues
 
 1. **DNS Not Resolving**
@@ -338,9 +356,26 @@ htop
 
 3. **Database Connection Issues**
    ```bash
-   # Check MySQL
-   systemctl status mysql
+   # Check MySQL service
+   sudo systemctl status mysql
+   
+   # Start MySQL if not running
+   sudo systemctl start mysql
+   sudo systemctl enable mysql
+   
+   # Test connection
    mysql -u ytdlp_user -p -e "SELECT 1"
+   ```
+   
+   **MySQL Socket Error (Can't connect through socket):**
+   ```bash
+   # Run the MySQL fix script
+   chmod +x fix-mysql.sh
+   sudo ./fix-mysql.sh
+   
+   # Or manually check/start MySQL
+   sudo systemctl start mysql
+   sudo systemctl status mysql
    ```
 
 4. **yt-dlp Issues**
