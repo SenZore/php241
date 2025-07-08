@@ -306,10 +306,15 @@ install_dependencies() {
 install_ytdlp() {
     log "Installing/updating yt-dlp..."
     
+    # Clean up any existing broken symlinks first
+    find /usr/local/bin -type l -name "*yt-dlp*" -delete 2>/dev/null || true
+    find /usr/bin -type l -name "*yt-dlp*" -delete 2>/dev/null || true
+    
     # Try different installation methods based on system
     if command -v pipx >/dev/null 2>&1; then
         # Use pipx if available (recommended for newer systems)
         log "Installing yt-dlp via pipx..."
+        pipx uninstall yt-dlp 2>/dev/null || true  # Remove any existing
         pipx install yt-dlp --force
         pipx ensurepath
     else
@@ -323,26 +328,41 @@ install_ytdlp() {
         export PATH="$HOME/.local/bin:$PATH"
     fi
     
-    # Create system-wide symlink
+    # Create system-wide symlink only if yt-dlp exists and works
     YTDLP_PATH=$(which yt-dlp 2>/dev/null || echo "$HOME/.local/bin/yt-dlp")
-    if [ -f "$YTDLP_PATH" ]; then
-        ln -sf "$YTDLP_PATH" /usr/local/bin/yt-dlp
-        ln -sf "$YTDLP_PATH" /usr/bin/yt-dlp
+    if [ -f "$YTDLP_PATH" ] && [ -x "$YTDLP_PATH" ]; then
+        # Test if yt-dlp actually works before creating symlinks
+        if "$YTDLP_PATH" --version >/dev/null 2>&1; then
+            ln -sf "$YTDLP_PATH" /usr/local/bin/yt-dlp
+            log "Created symlink: /usr/local/bin/yt-dlp -> $YTDLP_PATH"
+        fi
     fi
     
     # Verify installation
     if yt-dlp --version > /dev/null 2>&1; then
         log "yt-dlp updated successfully: $(yt-dlp --version)"
+    elif /usr/local/bin/yt-dlp --version > /dev/null 2>&1; then
+        log "yt-dlp updated successfully: $(/usr/local/bin/yt-dlp --version)"
     else
         # Fallback: try with --break-system-packages (not recommended but works)
-        warning "Trying alternative installation method..."
+        warning "pipx method failed, trying alternative installation..."
+        pip3 uninstall yt-dlp -y 2>/dev/null || true
         pip3 install -U yt-dlp --break-system-packages
         
         if yt-dlp --version > /dev/null 2>&1; then
             log "yt-dlp installed successfully: $(yt-dlp --version)"
         else
-            error "yt-dlp installation failed"
-            exit 1
+            # Final fallback: direct download
+            warning "pip method failed, downloading binary directly..."
+            wget -O /usr/local/bin/yt-dlp "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
+            chmod +x /usr/local/bin/yt-dlp
+            
+            if /usr/local/bin/yt-dlp --version > /dev/null 2>&1; then
+                log "yt-dlp installed successfully: $(/usr/local/bin/yt-dlp --version)"
+            else
+                error "yt-dlp installation failed with all methods"
+                exit 1
+            fi
         fi
     fi
 }
