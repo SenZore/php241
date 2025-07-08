@@ -74,10 +74,34 @@ $systemStats = getSystemStats();
                     <form id="downloadForm" class="space-y-4">
                         <div>
                             <label class="block text-white text-sm font-medium mb-2">YouTube URL</label>
-                            <input type="url" id="videoUrl" name="url" 
-                                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   placeholder="https://www.youtube.com/watch?v=..."
-                                   required>
+                            <div class="flex gap-2">
+                                <input type="url" id="videoUrl" name="url" 
+                                       class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="https://www.youtube.com/watch?v=..."
+                                       required>
+                                <button type="button" id="analyzeBtn" 
+                                        class="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Video Info Panel -->
+                        <div id="videoInfoPanel" class="hidden bg-white/5 rounded-lg p-4 border border-white/10">
+                            <div class="flex gap-4">
+                                <img id="videoThumbnail" src="" alt="Video Thumbnail" class="w-24 h-18 rounded object-cover">
+                                <div class="flex-1">
+                                    <h4 id="videoTitle" class="text-white font-medium text-sm mb-1"></h4>
+                                    <p id="videoUploader" class="text-gray-300 text-xs mb-1"></p>
+                                    <p id="videoDuration" class="text-gray-400 text-xs"></p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="flex justify-between text-xs text-gray-300 mb-1">
+                                    <span>Best Available Quality:</span>
+                                    <span id="bestQuality"></span>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -86,10 +110,11 @@ $systemStats = getSystemStats();
                                 <select id="quality" name="quality" 
                                         class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="best">Best Quality</option>
+                                    <option value="1080">1080p</option>
+                                    <option value="720">720p</option>
+                                    <option value="480">480p</option>
+                                    <option value="360">360p</option>
                                     <option value="worst">Smallest Size</option>
-                                    <option value="720p">720p</option>
-                                    <option value="480p">480p</option>
-                                    <option value="360p">360p</option>
                                 </select>
                             </div>
                             
@@ -98,9 +123,17 @@ $systemStats = getSystemStats();
                                 <select id="format" name="format" 
                                         class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="mp4">MP4 (Video)</option>
+                                    <option value="webm">WebM (Video)</option>
                                     <option value="mp3">MP3 (Audio Only)</option>
-                                    <option value="webm">WebM</option>
                                 </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Available Formats -->
+                        <div id="availableFormats" class="hidden">
+                            <label class="block text-white text-sm font-medium mb-2">Available Formats</label>
+                            <div id="formatsList" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                                <!-- Dynamic format options will be inserted here -->
                             </div>
                         </div>
                         
