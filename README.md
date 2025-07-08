@@ -2,15 +2,89 @@
 
 A modern, secure YouTube video downloader built with PHP, featuring real-time server monitoring, rate limiting, and automated deployment.
 
+## 🚀 Quick Start
+
+### One-Command Installation
+
+```bash
+# Download and run the installer (recommended)
+curl -fsSL https://raw.githubusercontent.com/SenZore/php241/main/oneliner.sh | sudo bash
+```
+
+### One-Command Update
+
+```bash
+# Update existing installation
+curl -fsSL https://raw.githubusercontent.com/SenZore/php241/main/update.sh | sudo bash
+```
+
+### Alternative Installation Methods
+
+```bash
+# Method 1: Auto-detect install/update
+wget https://raw.githubusercontent.com/SenZore/php241/main/setup.sh
+chmod +x setup.sh
+sudo ./setup.sh
+
+# Method 2: Traditional installer
+wget https://raw.githubusercontent.com/SenZore/php241/main/install.sh
+chmod +x install.sh
+sudo ./install.sh
+
+# Method 3: Git clone
+git clone https://github.com/SenZore/php241.git
+cd php241
+sudo ./setup.sh
+```
+
+## 🚀 Quick Deployment Guide
+
+### Step 1: Server Setup
+```bash
+# Ubuntu 22.04-24.04 server with domain pointing to IP
+```
+
+### Step 2: One-Command Deploy
+```bash
+curl -fsSL https://raw.githubusercontent.com/SenZore/php241/main/oneliner.sh | sudo bash
+```
+
+### Step 3: Access Your Site
+- **Website**: `https://yourdomain.com`
+- **Admin Panel**: `https://yourdomain.com/admin/`
+
+### Step 4: Configure Settings
+1. Login to admin panel with your credentials
+2. Configure rate limits and settings
+3. Test video download functionality
+
+## ⚡ What You'll Need
+
+During installation, you'll be prompted for:
+- 🌐 **Domain name** (e.g., `ytdl.yoursite.com`)
+- 📧 **SSL email** (for Let's Encrypt certificate)
+- 🔐 **Database password** (choose a strong password)
+- 👤 **Admin username** (for admin panel access)
+- 🔑 **Admin password** (for admin panel access)
+
 ## Features
 
 ### Core Features
 - **YouTube Video Downloading**: Powered by yt-dlp for high-quality downloads
+- **Smart Video Analysis**: Auto-detect video info, quality, and formats
 - **Multiple Formats**: Support for MP4, MP3, WebM formats
 - **Quality Selection**: Choose from various quality options (360p to best available)
 - **Rate Limiting**: 5 downloads per 30 minutes per IP address
 - **Real-time Progress**: Live download progress with percentage and speed
 - **Download History**: Track and manage download history
+
+### Admin Panel Features
+- **Secure Login**: Admin-only access at `/admin/`
+- **Maintenance Mode**: Toggle site maintenance with custom message
+- **User Management**: Create/manage admin users and permissions
+- **Rate Limit Control**: Per-user and global rate limits
+- **System Settings**: Configure site behavior and limits
+- **Activity Logs**: Track all admin actions and downloads
 
 ### System Monitoring
 - **Real-time CPU Usage**: Live CPU monitoring with visual indicators
@@ -30,6 +104,7 @@ A modern, secure YouTube video downloader built with PHP, featuring real-time se
 
 ### Automation
 - **One-click Installation**: Automated Ubuntu deployment script
+- **Auto-Updates**: Seamless updates with backup system
 - **DNS Validation**: Automatic domain configuration checking
 - **SSL Certificate**: Automatic Let's Encrypt certificate generation
 - **System Services**: Automated cleanup and maintenance
@@ -43,11 +118,13 @@ A modern, secure YouTube video downloader built with PHP, featuring real-time se
 - **Storage**: 10GB+ free space
 - **Network**: Public IP address with domain pointing to it
 
-### Software Dependencies
+### Software Dependencies (Auto-installed)
 - **Web Server**: Nginx
 - **Database**: MySQL 8.0+
 - **PHP**: PHP 8.1+
 - **Python**: Python 3.8+
+- **yt-dlp**: Latest version
+- **FFmpeg**: For video processing
 - **yt-dlp**: Latest version via pip
 
 ## Installation
@@ -304,6 +381,47 @@ certbot certificates
 
 # Update system
 sudo apt update && sudo apt upgrade
+```
+
+## 🔄 Updates & Maintenance
+
+### Automatic Updates
+
+The system includes an intelligent update mechanism that automatically detects whether you're installing or updating:
+
+```bash
+# Auto-detect and update (recommended)
+sudo ./setup.sh --update
+```
+
+### One-Command Updates
+
+```bash
+# Quick update from GitHub
+curl -fsSL https://raw.githubusercontent.com/SenZore/php241/main/update.sh | sudo bash
+
+# Or download and run
+wget https://raw.githubusercontent.com/SenZore/php241/main/update.sh
+chmod +x update.sh
+sudo ./update.sh
+```
+
+### Update Process
+
+The update system automatically:
+- ✅ **Creates backups** of your files and database
+- ✅ **Downloads latest version** from GitHub
+- ✅ **Preserves your configuration** during updates
+- ✅ **Runs database migrations** for new features
+- ✅ **Restarts services** automatically
+- ✅ **Validates functionality** after update
+
+### Manual Update
+
+```bash
+# For manual updates
+git pull origin main
+sudo ./setup.sh --update
 ```
 
 ## Contributing
