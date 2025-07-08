@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME:-localhost}
+      - SSL_EMAIL=${SSL_EMAIL:-admin@localhost}
+      - DB_PASSWORD=${DB_PASSWORD:-ytdlp_secure_password}
+    volumes:
+      - ./downloads:/var/www/html/downloads
+      - ./logs:/var/log/ytdlp
+      - ./data:/var/lib/mysql
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - ytdlp-network
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-ytdlp_secure_password}
+      - MYSQL_DATABASE=ytdlp_db
+      - MYSQL_USER=ytdlp_user
+      - MYSQL_PASSWORD=${DB_PASSWORD:-ytdlp_secure_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - ytdlp-network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - ytdlp-network
+
+networks:
+  ytdlp-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
