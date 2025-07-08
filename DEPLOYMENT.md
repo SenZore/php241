@@ -97,15 +97,22 @@ sudo apt install -y curl wget unzip git htop
 ### Step 2: Install yt-dlp
 
 ```bash
-# Install via pip
-pip3 install -U yt-dlp
+# For Ubuntu 22.04+ (pipx method - recommended)
+sudo apt install -y pipx
+pipx install yt-dlp
+pipx ensurepath
 
-# Create symlink for system-wide access
-sudo ln -sf /usr/local/bin/yt-dlp /usr/bin/yt-dlp
+# Create system-wide symlink
+sudo ln -sf ~/.local/bin/yt-dlp /usr/local/bin/yt-dlp
+
+# Alternative for older systems or if pipx fails
+# pip3 install -U yt-dlp --break-system-packages
 
 # Verify installation
 yt-dlp --version
 ```
+
+**Note:** Ubuntu 22.04+ uses "externally-managed-environment" which prevents pip from installing packages system-wide. The auto-installer handles this automatically, but for manual installation, use pipx as shown above.
 
 ### Step 3: Configure Database
 

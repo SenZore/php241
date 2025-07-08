@@ -11,6 +11,8 @@ A modern, secure YouTube video downloader built with PHP, featuring real-time se
 curl -fsSL https://raw.githubusercontent.com/SenZore/php241/main/oneliner.sh | sudo bash
 ```
 
+> **Note:** The installer automatically handles modern Ubuntu Python environment issues (externally-managed-environment) by using pipx and fallback methods.
+
 ### One-Command Update
 
 ```bash
@@ -117,6 +119,13 @@ During installation, you'll be prompted for:
 - **RAM**: Minimum 1GB (2GB recommended)
 - **Storage**: 10GB+ free space
 - **Network**: Public IP address with domain pointing to it
+
+### Required Ports
+- **Port 80**: HTTP traffic (redirects to HTTPS)
+- **Port 443**: HTTPS traffic (main website)
+- **Port 22**: SSH access (for server management)
+
+> **Note**: The installer automatically configures UFW firewall to allow only these essential ports.
 
 ### Software Dependencies (Auto-installed)
 - **Web Server**: Nginx
@@ -341,6 +350,53 @@ htop
    
    # Test manually
    yt-dlp --version
+   ```
+
+5. **Python "externally-managed-environment" Error (Ubuntu 22.04+)**
+   
+   If you encounter this error during installation:
+   ```
+   error: externally-managed-environment
+   This environment is externally managed
+   ```
+   
+   **Solution 1: Use pipx (Recommended)**
+   ```bash
+   # Install pipx
+   sudo apt install pipx
+   
+   # Install yt-dlp with pipx
+   pipx install yt-dlp
+   pipx ensurepath
+   
+   # Create system-wide symlink
+   sudo ln -sf ~/.local/bin/yt-dlp /usr/local/bin/yt-dlp
+   ```
+   
+   **Solution 2: Use virtual environment**
+   ```bash
+   # Create virtual environment
+   python3 -m venv /opt/ytdlp-venv
+   source /opt/ytdlp-venv/bin/activate
+   pip install yt-dlp
+   
+   # Create system-wide symlink
+   sudo ln -sf /opt/ytdlp-venv/bin/yt-dlp /usr/local/bin/yt-dlp
+   ```
+   
+   **Solution 3: Override (Not Recommended)**
+   ```bash
+   # Only use if other methods fail
+   pip3 install -U yt-dlp --break-system-packages
+   ```
+   
+   **Note:** Our installation scripts automatically handle this issue by trying pipx first, then falling back to other methods.
+   
+   **Quick Fix Script:**
+   ```bash
+   # Run the dedicated fix script
+   chmod +x fix-python-env.sh
+   ./fix-python-env.sh
    ```
 
 ### Performance Optimization

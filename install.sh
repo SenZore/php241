@@ -192,18 +192,44 @@ install_dependencies() {
 install_ytdlp() {
     log "Installing yt-dlp..."
     
-    # Install via pip for latest version
-    pip3 install -U yt-dlp
+    # Try different installation methods based on system
+    if command -v pipx >/dev/null 2>&1; then
+        # Use pipx if available (recommended for newer systems)
+        log "Installing yt-dlp via pipx..."
+        pipx install yt-dlp
+        pipx ensurepath
+    else
+        # Install pipx first, then yt-dlp
+        log "Installing pipx and yt-dlp..."
+        apt install -y pipx
+        pipx install yt-dlp
+        pipx ensurepath
+        
+        # Add pipx bin to PATH for current session
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
     
-    # Create symlink for easier access
-    ln -sf /usr/local/bin/yt-dlp /usr/bin/yt-dlp
+    # Create system-wide symlink
+    YTDLP_PATH=$(which yt-dlp 2>/dev/null || echo "$HOME/.local/bin/yt-dlp")
+    if [ -f "$YTDLP_PATH" ]; then
+        ln -sf "$YTDLP_PATH" /usr/local/bin/yt-dlp
+        ln -sf "$YTDLP_PATH" /usr/bin/yt-dlp
+    fi
     
     # Verify installation
     if yt-dlp --version > /dev/null 2>&1; then
         log "yt-dlp installed successfully: $(yt-dlp --version)"
     else
-        error "yt-dlp installation failed"
-        exit 1
+        # Fallback: try with --break-system-packages (not recommended but works)
+        warning "Trying alternative installation method..."
+        pip3 install -U yt-dlp --break-system-packages
+        
+        if yt-dlp --version > /dev/null 2>&1; then
+            log "yt-dlp installed successfully: $(yt-dlp --version)"
+        else
+            error "yt-dlp installation failed"
+            exit 1
+        fi
     fi
 }
 
